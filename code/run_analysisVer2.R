@@ -72,8 +72,10 @@ dat_merge$activity <- apply(dat_merge[ , "activity", drop=F], 2, as.numeric)
 levels(dat_merge$activity) <- activity_labels_levels
 # attach dataset identifier characters to 3rd column to convert to factor variable
 levels(dat_merge$experimenttype) <- c("train", "test")
-# calculate the overall mean and standard deviation for each column variable
-# 
+# extract the mean and standard deviation for each column variable
+column_names <- colnames(dat_merge)
+required_columns <- grep(x=column_names, pattern="mean|std|subject|activity|experimenttype")
+dat_merge <- dat_merge[ , required_columns]
 # split merged dataset (or before merge also can) by subject label/code
 # use dplyr group by activity label
 # calc the mean for every activity, for each subject. This returns a table of means for each variable, grouped by 
