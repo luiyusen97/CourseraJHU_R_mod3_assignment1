@@ -9,40 +9,61 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# CodeBook
+# Introduction
 
 This is a codebook describing the variables, data and transformations performed on the raw data. For details on raw data, refer to readme and features_info text files in the rawdata folder.
 
-## Variables
+# Variables for dat_avg_values.txt
+
+This data contains the mean calculated from each mean and standard deviation variable in the raw data. it is ordered by subject, then activity type. The following table describes the first 4 ordering and descriptor variables in the dataframe. The other measurement variables are described together with the dataframe containing the original measurements, which have been re-ordered.
 
 ```{r, echo=FALSE}
 
+library(knitr)
 dat_avg_values <- read.table(file = "output//dat_avg_values.txt", header = TRUE, sep = "\t")
 activity_levels_char <- readLines(con = "output//activity_levels.txt")
 close(con = "output//activity_levels.txt")
+for (i in 1:6){
+    activity_levels_char[i] <- paste0(as.character(i), ": ", activity_levels_char[i])
+}
 experimenttype_levels_char <- readLines(con = "output//experimenttype_levels")
+for (i in 1:2){
+    experimenttype_levels_char[i] <- paste0(as.character(i), ": ", experimenttype_levels_char[i])
+}
 close(con = "output//experimenttype_levels")
-column_names <- colnames(dat_avg_values)
+columnnames <- colnames(dat_avg_values)
 variable_explanation_table <- data.frame()
 description_vector <- c("Variable used for grouping purposes.",
-                        )
+                        "Identifier variable for subjects. Each number represents a unique subject, ranging from 1 to 30. Numeric variable.",
+                        paste("Identifier factor variable for the various activities in the experiment. Each number represents a type of activity performed by each subject, ranging from 1 to 6. Factor levels and their corresponding character string descriptors are:", activity_levels_char, sep = "\n"),
+                        paste("Identifier factor variable for experiment type, ranging from 1 to 2. Factor levels and their corresponding character string descriptors are:", experimenttype_levels_char, "70% of subjects were in the train experiment, and the other 30% were in the test experiment.", sep = "\n"))
+variable_explanation_table <- rbind(colnames(dat_avg_values)[1:4], description_vector)
+colnames(variable_explanation_table) <- c("Variables", "Description")
+knitr::kable(variable_explanation_table, caption = "Identifier variables and their descriptions.")
 
 ```
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The rest of the variables to the right are calculated mean values. The average was taken of the original raw data variables, grouped by activity.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# Variables for dat_merge_ordered.txt
 
-```{r cars}
-summary(cars)
-```
+This dataset contains the re-ordered rawdata without any calculations done to the values. Data is ordered by subject, then activity. Individual subjects' datasets (with all 6 activities per subject) are in the output//individualsubjectdata// folder. The first 3 variables are the same as in dat_avg_values.txt, and are identifier variables. The rest are the same as in the raw data. The data taken only contains the mean and standard deviations of the measured data. Detailed descriptions for those can be found in the raw data folder, with the filepath of UCI HAR Dataset//features_info.txt.
 
-## Including Plots
+# Changes made to data to produce the 2 datasets
 
-You can also embed plots, for example:
+1) I read the rawdata sets for x_train.txt and x_text.txt. features.txt contains the column names for each dataset. 
+train//y_train.txt contains the activity factor variable for train, train//subject_train.txt contains the subject identifier variable for the train set.
+2) test//y_test.txt and test//subject_test contained the respective identifier variables for the test dataset. activity_labels.txt contained the descriptor character strings for the activity factor variable. I attached this to the levels attribute of the activity factor variable. The experiment type factor variable was created by myself, then attached to the factor variable's levels. 
+3) I column bound the subject and activity variables to the left of both dataframes, then row bound the test dataframe to the bottom of the train dataframe.
+4) I selected all mean (mean()) and standard deviation (std()) variables and discarded the rest. 
+5) I split the merged dataframe (dat_merge) by the subject identifier variable, resulting in 30 dataframes. Then, I ordered each dataframe by the activity factor variable. These dataframes are stored in the output//individualsubjectdata// folder, named and numbered accordingly.
+6) The individual dataframes were then row bound to form a larger dataframe stored in dat_merge_ordered.txt, ordered by subject, then activity.
+7) I iterated through each individual subject's dataframe and calculated the mean for each measurement column using summarise. 
+8) Since summarise creates a new dataframe, I row bound the dataframes to a larger dataframe stored in dat_avg_values.txt. These are also ordered by subject, then activity.
+9) Thus, the output is 2 dataframes, one containing the order raw data, the other containing the means calculated from the raw data for each activity, orderd by subject.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+# Instructions for reading the 2 dataframes from output// folder
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The column names can be read by simply setting the header parameter to TRUE in read.table. The values are tab separated.
+The activity factor levels can be read from activity_levels.txt, while the experiment type factor levels can be read from experimenttype_levels.txt.
+Please ignore the ele$activity column, it is only there for grouping and ordering purposes.
