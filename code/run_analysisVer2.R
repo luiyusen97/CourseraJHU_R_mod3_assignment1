@@ -71,7 +71,8 @@ dat_merge$activity <- apply(dat_merge[ , "activity", drop=F], 2, as.numeric)
 # attach levels activity character vector to activity labels column to convert to factor variable
 levels(dat_merge$activity) <- activity_labels_levels
 # attach dataset identifier characters to 3rd column to convert to factor variable
-levels(dat_merge$experimenttype) <- c("train", "test")
+experimenttype_levels <- c("train", "test")
+levels(dat_merge$experimenttype) <- experimenttype_levels
 # extract the mean and standard deviation for each column variable
 column_names <- colnames(dat_merge)
 required_columns <- grep(x=column_names, pattern="mean|std|subject|activity|experimenttype")
@@ -95,7 +96,43 @@ for (ele in dat_merged_splitbysubject){
     # compile all original values into an ordered, tidy dataframe
     dat_merge_ordered <- rbind(dat_merge_ordered, ele)
 }
-rm(list=c("dat_merge", "dat_test", "dat_train", "ele", "ele_avg", "activity_labels_levels",
+# remove redundant variables. These variables have already been used or have been added to the data
+# frames
+rm(list=c("dat_merge", "dat_test", "dat_train", "ele", "ele_avg",
      "colnames_vector", "column_names", "con", "destfilepath", "i", "required_columns",
      "test_activity_labels", "test_factor_vector", "test_subject_labels", 
      "train_activity_labels", "train_factor_vector", "train_subject_labels", "url"))
+
+# write the outputted dataframes to tab separated files
+# the delimiter is tab, and when reading these files, header should be true, since colnames are 
+# included
+con <- file("output//dat_avg_values.txt", "wt")
+write.table(x = dat_avg_values,
+            file = con,
+            sep = "\t", col.names = TRUE, row.names=F
+)
+close(con)
+con <- file("output//dat_merge_ordered.txt", "wt")
+write.table(x = dat_merge_ordered,
+            file = con,
+            sep = "\t", col.names = TRUE, row.names=F
+)
+close(con)
+# for the split dataframe, this is a list of dataframes, with each dataframe containing the data for
+# all 6 activiies for a single subject. Thus, it is read into a separate folder with indexed names
+# for each dataframe
+# create the file names
+filenames <- vector(mode="character")
+for (i in 1:30){
+    name <- paste0("subject", as.character(i))
+    filenames <- c(filenames, name)
+}
+# iterate through all the file names and the dataframes and write each one into a tab separated txt file
+for (i in 1:30){
+    con <- file(paste0("output//individualsubjectdata//", filenames[i], ".txt"), open="wt")
+    write.table(x = dat_merged_splitbysubject[i],
+                file = con,
+                sep = "\t", col.names = TRUE, row.names=F
+                )
+    close(con)
+}
