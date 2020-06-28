@@ -46,12 +46,32 @@ close(con)
 con <- file("rawdata//UCI HAR Dataset//activity_labels.txt")
 activity_labels_levels <- readLines(con)
 close(con)
+for (i in 1:length(activity_labels_levels)){
+    activity_labels_levels[i] <- sub(x=activity_labels_levels[i], pattern=".* ", replacement="")
+}
+for (i in 1:length(colnames_vector)){
+    colnames_vector[i] <- sub(x=colnames_vector[i], pattern=".* ", replacement="")
+}
 
-# cbind subject, activity labels, then a factor variable idenifying test or train to the left of each data set
-# attach levels activity character vector to activity labels column to convert to factor variable
 # attach colnames to each dataset. Rmb to avoid first 3 columns which are the abovementioned cbound columns
+colnames(dat_train) <- colnames_vector
+colnames(dat_test) <- colnames_vector
+# cbind subject, activity labels, then a factor variable idenifying test or train to the left of each data set
+train_factor_vector <- c(rep(1, nrow(dat_train)))
+dat_train <- cbind(train_subject_labels, train_activity_labels, train_factor_vector, dat_train)
+colnames(dat_train)[1:3] <- c("subject", "activity", "experimenttype")
+test_factor_vector <- c(rep(2, nrow(dat_test)))
+dat_test <- cbind(test_subject_labels, test_activity_labels, test_factor_vector, dat_test)
+colnames(dat_test)[1:3] <- c("subject", "activity", "experimenttype")
 # merge data by rbinding test below train data
+dat_merge <- rbind(dat_train, dat_test)
+# convert subject and acivity columns to numeric class
+dat_merge$subject <- apply(dat_merge[ , "subject", drop=F], 2, as.numeric)
+dat_merge$activity <- apply(dat_merge[ , "activity", drop=F], 2, as.numeric)
+# attach levels activity character vector to activity labels column to convert to factor variable
+levels(dat_merge$activity) <- activity_labels_levels
 # attach dataset identifier characters to 3rd column to convert to factor variable
+levels(dat_merge$experimenttype) <- c("train", "test")
 # calculate the overall mean and standard deviation for each column variable
 # 
 # split merged dataset (or before merge also can) by subject label/code

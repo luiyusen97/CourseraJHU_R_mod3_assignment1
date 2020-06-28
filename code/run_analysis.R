@@ -42,5 +42,6 @@ activity_labels <- readLines(con)
 close(con)
 # mebbe remove non_factored rows in data_train? the lower rows have no activity type
 rm(list=c("test_labels", "train_labels", "train_subject", "url"))
+dat_train <- dat_train[!(which(is.na(dat_train$activitytype))), ]
 dat_merged <- merge(x=dat_train, y=dat_test, by.x="activitytype", by.y="activitytype")
 levels(dat_merged$activitytype) <- activity_labels
