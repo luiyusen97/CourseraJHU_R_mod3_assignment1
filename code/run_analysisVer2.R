@@ -96,6 +96,9 @@ for (ele in dat_merged_splitbysubject){
     # compile all original values into an ordered, tidy dataframe
     dat_merge_ordered <- rbind(dat_merge_ordered, ele)
 }
+for (i in 5:83){
+    colnames(dat_avg_values)[i] <- paste0("mean(", colnames(dat_avg_values)[i], ")")
+}
 # remove redundant variables. These variables have already been used or have been added to the data
 # frames
 rm(list=c("dat_merge", "dat_test", "dat_train", "ele", "ele_avg",

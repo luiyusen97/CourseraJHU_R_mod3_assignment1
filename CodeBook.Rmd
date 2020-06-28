@@ -1,0 +1,48 @@
+---
+title: "CodeBook"
+author: "luiyusen97"
+date: "6/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# CodeBook
+
+This is a codebook describing the variables, data and transformations performed on the raw data. For details on raw data, refer to readme and features_info text files in the rawdata folder.
+
+## Variables
+
+```{r, echo=FALSE}
+
+dat_avg_values <- read.table(file = "output//dat_avg_values.txt", header = TRUE, sep = "\t")
+activity_levels_char <- readLines(con = "output//activity_levels.txt")
+close(con = "output//activity_levels.txt")
+experimenttype_levels_char <- readLines(con = "output//experimenttype_levels")
+close(con = "output//experimenttype_levels")
+column_names <- colnames(dat_avg_values)
+variable_explanation_table <- data.frame()
+description_vector <- c("Variable used for grouping purposes.",
+                        )
+
+```
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
