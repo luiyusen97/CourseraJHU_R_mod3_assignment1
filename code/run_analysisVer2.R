@@ -136,3 +136,12 @@ for (i in 1:30){
                 )
     close(con)
 }
+# write the levels character vector for activity and experiment type
+# when reading these, simply readLines into a character vector, then assign them to the factors columns
+# via levels function
+con <- file("output//activity_levels.txt", "wt")
+writeLines(con=con, text=activity_labels_levels, sep="\n")
+close(con)
+con <- file("output//experimenttype_levels.txt", "wt")
+writeLines(con=con, text=experimenttype_levels, sep="\n")
+close(con)
