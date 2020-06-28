@@ -77,9 +77,21 @@ column_names <- colnames(dat_merge)
 required_columns <- grep(x=column_names, pattern="mean|std|subject|activity|experimenttype")
 dat_merge <- dat_merge[ , required_columns]
 # split merged dataset (or before merge also can) by subject label/code
+dat_merged_splitbysubject <- split(x=dat_merge, f=dat_merge$subject)
 # use dplyr group by activity label
-# calc the mean for every activity, for each subject. This returns a table of means for each variable, grouped by 
-# activity, for each subject.
-# Iterated over split list of dataframes, this returns a list of tidy dataframes
-# rbind every dataframe, and order according to subject codes
-# this should retain colnames
+dat_avg_values <- data.frame()
+dat_merge_ordered <- data.frame()
+for (ele in dat_merged_splitbysubject){
+    # order and group within each subject's data by activity type
+    ele <- arrange(ele, ele$activity)
+    ele <- group_by(ele, ele$activity)
+    # preserve the first 3 identifier columns, calculate means for the rest
+    ele_avg <- summarise(ele, across(.cols=1:3), across(.cols=4:82, .fns=mean))
+    # preserving first 3 columns creates duplicate rows (since there are now less mean values than 
+    # rows), so remove them
+    ele_avg <- distinct(ele_avg)
+    # compile all average values into a second, tidy dataframe
+    dat_avg_values <- rbind(dat_avg_values, ele_avg)
+    # compile all original values into an ordered, tidy dataframe
+    dat_merge_ordered <- rbind(dat_merge_ordered, ele)
+}
