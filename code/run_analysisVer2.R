@@ -95,3 +95,7 @@ for (ele in dat_merged_splitbysubject){
     # compile all original values into an ordered, tidy dataframe
     dat_merge_ordered <- rbind(dat_merge_ordered, ele)
 }
+rm(list=c("dat_merge", "dat_test", "dat_train", "ele", "ele_avg", "activity_labels_levels",
+     "colnames_vector", "column_names", "con", "destfilepath", "i", "required_columns",
+     "test_activity_labels", "test_factor_vector", "test_subject_labels", 
+     "train_activity_labels", "train_factor_vector", "train_subject_labels", "url"))
