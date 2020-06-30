@@ -1,0 +1,47 @@
+---
+title: "README"
+author: "luiyusen97"
+date: "6/30/2020"
+output: md_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#  Descriptor files
+
+Codebook.md describes the new variables created and added and the transformations done to the original raw data. The description table is only viewable on the html version however.
+
+#  Datasets
+
+This is under the folder output//. All output datasets are in tab delimited format. When reading any dataset with read.table, please set header to TRUE.
+
+##  dat_merge_ordered.txt
+
+This is an ordered dataset of the raw data, without transformations. It is ordered by subject, then by activity.
+
+##  dat_avg_values.txt
+
+This is the output dataset from the script. It is also ordered by subject and activity, but instead of the rawdata, has their calculated means instead.
+
+##  folder individualsubjectdata//
+
+This is a folder containing the individual datasets per subject, ordered by activity. No transformations done to the data.
+
+## activity_levels.txt
+
+This contains the levels strings for the activity factor variable.
+
+##  experimenttype_levels
+
+This contains the levels strings for the experimenttype factor variable.
+
+#  Scripts
+
+This is under the folder code//.
+
+##  run_analysisVer2.r
+
+This takes the rawdata, calculates the means of all mean() and std() variables, and outputs 2 large datasets and a folder of smaller, split datasets. The script will download and unzip the raw data if it has not been downloaded, and write out the output datasets to tab delimited files.
