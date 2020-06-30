@@ -17,27 +17,32 @@ This is a codebook describing the variables, data and transformations performed 
 
 This data contains the mean calculated from each mean and standard deviation variable in the raw data. it is ordered by subject, then activity type. The following table describes the first 4 ordering and descriptor variables in the dataframe. The other measurement variables are described together with the dataframe containing the original measurements, which have been re-ordered.
 
-```{r, echo=FALSE}
-
+```{r dat_avg_values_description, echo=FALSE}
 library(knitr)
 dat_avg_values <- read.table(file = "output//dat_avg_values.txt", header = TRUE, sep = "\t")
-activity_levels_char <- readLines(con = "output//activity_levels.txt")
-close(con = "output//activity_levels.txt")
+con <- file("output//activity_levels.txt")
+activity_levels_char <- readLines(con)
+close(con)
 for (i in 1:6){
     activity_levels_char[i] <- paste0(as.character(i), ": ", activity_levels_char[i])
 }
-experimenttype_levels_char <- readLines(con = "output//experimenttype_levels")
+con <- file("output//experimenttype_levels.txt")
+experimenttype_levels_char <- readLines(con)
 for (i in 1:2){
     experimenttype_levels_char[i] <- paste0(as.character(i), ": ", experimenttype_levels_char[i])
 }
-close(con = "output//experimenttype_levels")
+close(con)
 columnnames <- colnames(dat_avg_values)
 variable_explanation_table <- data.frame()
+description_3 <- c("Identifier factor variable for the various activities in the experiment. Each number represents a type of activity performed by each subject, ranging from 1 to 6. Factor levels and their corresponding character string descriptors are:", activity_levels_char)
+description_3 <- paste(description_3, collapse = " ")
+description_4 <- c("Identifier factor variable for experiment type, ranging from 1 to 2. Factor levels and their corresponding character string descriptors are:", experimenttype_levels_char, "70% of subjects were in the train experiment, and the other 30% were in the test experiment.")
+description_4 <- paste(description_4, collapse = " ")
 description_vector <- c("Variable used for grouping purposes.",
                         "Identifier variable for subjects. Each number represents a unique subject, ranging from 1 to 30. Numeric variable.",
-                        paste("Identifier factor variable for the various activities in the experiment. Each number represents a type of activity performed by each subject, ranging from 1 to 6. Factor levels and their corresponding character string descriptors are:", activity_levels_char, sep = "\n"),
-                        paste("Identifier factor variable for experiment type, ranging from 1 to 2. Factor levels and their corresponding character string descriptors are:", experimenttype_levels_char, "70% of subjects were in the train experiment, and the other 30% were in the test experiment.", sep = "\n"))
-variable_explanation_table <- rbind(colnames(dat_avg_values)[1:4], description_vector)
+                        description_3,
+                        description_4)
+variable_explanation_table <- cbind(colnames(dat_avg_values)[1:4], description_vector)
 colnames(variable_explanation_table) <- c("Variables", "Description")
 knitr::kable(variable_explanation_table, caption = "Identifier variables and their descriptions.")
 
